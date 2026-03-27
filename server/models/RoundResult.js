@@ -3,32 +3,20 @@ import mongoose from "mongoose";
 const roundResultSchema = new mongoose.Schema({
   team: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Team",
-    required: true
+    ref: "Team"
   },
 
   event: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Event",
-    required: true
+    ref: "Event"
   },
 
-  round: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Round",
-    required: true
-  },
+  roundId: mongoose.Schema.Types.ObjectId,
 
   totalScore: Number,
-
-  averageScore: Number, // across judges
-
   rank: Number,
 
-  isQualified: {
-    type: Boolean,
-    default: false
-  }
+  isQualified: Boolean
 
 }, { timestamps: true });
 

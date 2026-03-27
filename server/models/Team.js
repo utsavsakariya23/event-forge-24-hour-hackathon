@@ -1,26 +1,7 @@
 import mongoose from "mongoose";
 
-const memberSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    default: null
-  },
-
-  name: String,
-  email: String,
-
-  isVerified: {
-    type: Boolean,
-    default: false
-  }
-});
-
 const teamSchema = new mongoose.Schema({
-  teamName: {
-    type: String,
-    required: true
-  },
+  teamName: String,
 
   event: {
     type: mongoose.Schema.Types.ObjectId,
@@ -32,14 +13,21 @@ const teamSchema = new mongoose.Schema({
     ref: "User"
   },
 
-  members: [memberSchema],
-
-  // Payment
-  paymentStatus: {
-    type: String,
-    enum: ["pending", "paid"],
-    default: "pending"
-  }
+  members: [
+    {
+      name: String,
+      email: String,
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null
+      },
+      isVerified: {
+        type: Boolean,
+        default: false
+      }
+    }
+  ]
 
 }, { timestamps: true });
 

@@ -11,12 +11,8 @@ const submissionSchema = new mongoose.Schema({
     ref: "Event"
   },
 
-  round: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Round"
-  },
+  roundId: mongoose.Schema.Types.ObjectId,
 
-  // Dynamic fields
   data: {
     type: Map,
     of: String

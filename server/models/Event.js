@@ -1,25 +1,20 @@
 import mongoose from "mongoose";
 
 const eventSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true
-  },
-
+  title: String,
   description: String,
   rules: String,
-  banner: String,
 
   type: {
     type: String,
-    enum: ["technical", "non-technical"],
-    required: true
+    enum: ["technical", "non-technical"]
   },
 
-  // Team Constraints
+  banner: String,
+
+  // Team rules
   minTeamSize: Number,
   maxTeamSize: Number,
-
   maxTeams: Number,
 
   registrationDeadline: Date,
@@ -29,29 +24,48 @@ const eventSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-
-  registrationFee: {
-    type: Number,
-    default: 0
-  },
-
-  currency: {
-    type: String,
-    default: "INR"
-  },
+  registrationFee: Number,
 
   // Judges
-  judges: [
+  judges: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  }],
+
+  // Embedded rounds
+  rounds: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
+      name: String,
+      roundNumber: Number,
+
+      rules: String,
+
+      evaluationCriteria: [
+        {
+          name: String,
+          maxScore: Number
+        }
+      ],
+
+      isSubmissionRequired: {
+        type: Boolean,
+        default: false
+      },
+
+      // Qualification
+      qualification: {
+        type: {
+          type: String,
+          enum: ["top_n", "min_score", "percentage"]
+        },
+        value: Number
+      }
     }
   ],
 
-  // Feature flags
-  hasSubmission: {
-    type: Boolean,
-    default: false
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
   }
 
 }, { timestamps: true });
