@@ -16,8 +16,9 @@ app.use(express.json());
 app.get('/', (req,res)=>{ // in browser, localhost:3000
     res.send('API is working')
 })
-// auth route
-// app.use('/api/auth', authRouter)
+
+// Routes
+app.use("/api/auth", authRoutes);
 
 
 const PORT = process.env.PORT || 3000;
