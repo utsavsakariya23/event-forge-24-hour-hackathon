@@ -155,10 +155,78 @@ export default function JudgeManagement() {
               </div>
             </div>
 
-            {/* Main Data Table Container */}
-            <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-slate-100 dark:border-slate-800">
-              <div className="px-8 py-6 flex items-center justify-between bg-surface-container-low/50 border-b border-slate-100 dark:border-slate-800">
-                <h3 className="font-bold text-lg font-headline">
+            {/* Main Data Table Containers */}
+            <div className="col-span-12 lg:col-span-8 space-y-8">
+
+              {/* Pending Applications Table */}
+              <div className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-slate-100 dark:border-slate-800">
+                <div className="px-8 py-5 flex items-center justify-between bg-surface-container-low/50 border-b border-primary/20">
+                  <div className="flex items-center gap-3">
+                    <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    <h3 className="font-bold text-lg font-headline text-primary">
+                      Pending Applications
+                    </h3>
+                  </div>
+                  <span className="bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full">2 New Requests</span>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-surface-container-low/20">
+                        <th className="px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest font-label">
+                          Applicant
+                        </th>
+                        <th className="px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest font-label">
+                          Specialization
+                        </th>
+                        <th className="px-8 py-4 text-xs font-black text-slate-500 uppercase tracking-widest font-label text-right">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                      {[
+                        { name: "Devon Lane", email: "devon@cryptoview.com", spec: "Blockchain / DeFi", initial: "DL" },
+                        { name: "Arlene McCoy", email: "arlene@uxdesign.net", spec: "Frontend & UI/UX", initial: "AM" }
+                      ].map((pending, idx) => (
+                        <tr key={"pend-"+idx} className="hover:bg-surface-container-low/50 transition-colors group">
+                          <td className="px-8 py-6">
+                            <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-primary font-black font-headline">
+                                {pending.initial}
+                              </div>
+                              <div>
+                                <p className="font-bold text-on-surface">{pending.name}</p>
+                                <p className="text-xs text-slate-500">{pending.email}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-8 py-6">
+                            <span className="px-3 py-1 bg-surface-container-high text-on-surface-variant text-[10px] font-black uppercase rounded-full">
+                              {pending.spec}
+                            </span>
+                          </td>
+                          <td className="px-8 py-6 text-right">
+                            <div className="flex items-center justify-end gap-3">
+                              <button className="px-4 py-2 border border-error text-error text-[10px] font-bold uppercase rounded-lg hover:bg-error hover:text-white transition-all shadow-sm">
+                                Reject
+                              </button>
+                              <button className="px-4 py-2 bg-primary text-white text-[10px] font-bold uppercase rounded-lg hover:bg-primary/90 transition-all shadow-sm">
+                                Approve
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Active Judges Table */}
+              <div className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-slate-100 dark:border-slate-800">
+                <div className="px-8 py-6 flex items-center justify-between bg-surface-container-low/50 border-b border-slate-100 dark:border-slate-800">
+                  <h3 className="font-bold text-lg font-headline">
                   Active Judges List
                 </h3>
                 <div className="flex items-center gap-4">
@@ -299,6 +367,7 @@ export default function JudgeManagement() {
                     </span>
                   </button>
                 </div>
+              </div>
               </div>
             </div>
 
