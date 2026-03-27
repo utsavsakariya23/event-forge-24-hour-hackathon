@@ -1,7 +1,183 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+
+const API_BASE_URL = "http://localhost:5000/api";
 
 export default function Scoring() {
-  const leaderboard = [
+  const [events, setEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState("");
+  const [teams, setTeams] = useState([]);
+  const [scores, setScores] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); // "success" or "error"
+  const [judges, setJudges] = useState([]);
+
+  // Fetch events and judges on component mount
+  useEffect(() => {
+    fetchEvents();
+    fetchJudges();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/events`);
+      if (!response.ok) throw new Error("Failed to fetch events");
+      const data = await response.json();
+      setEvents(data);
+    } catch (err) {
+      console.error("Error fetching events:", err);
+      // Mock data fallback
+      setEvents([
+        { id: 1, name: "Global Hackathon 2024", status: "Active" },
+        { id: 2, name: "Tech Summit 2024", status: "Active" },
+        { id: 3, name: "Innovation Challenge", status: "Completed" },
+      ]);
+    }
+  };
+
+  const fetchJudges = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/judges`);
+      if (!response.ok) throw new Error("Failed to fetch judges");
+      const data = await response.json();
+      setJudges(data);
+    } catch (err) {
+      console.error("Error fetching judges:", err);
+      setJudges([
+        { id: 1, name: "Marcus Sterling" },
+        { id: 2, name: "Elena Rodriguez" },
+        { id: 3, name: "Dr. Sarah Chen" },
+      ]);
+    }
+  };
+
+  const handleEventChange = async (eventId) => {
+    setSelectedEvent(eventId);
+    if (eventId) {
+      await fetchTeamsForEvent(eventId);
+    } else {
+      setTeams([]);
+      setScores({});
+    }
+  };
+
+  const fetchTeamsForEvent = async (eventId) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/events/${eventId}/teams`);
+      if (!response.ok) throw new Error("Failed to fetch teams");
+      const data = await response.json();
+      setTeams(data);
+      // Initialize empty scores object
+      const initialScores = {};
+      data.forEach((team) => {
+        judges.forEach((judge) => {
+          initialScores[`${team.id}-${judge.id}`] = "";
+        });
+      });
+      setScores(initialScores);
+      setMessage("");
+    } catch (err) {
+      console.error("Error fetching teams:", err);
+      // Mock teams fallback
+      setTeams([
+        { id: 1, name: "Team Alpha", participants: 4 },
+        { id: 2, name: "Team Beta", participants: 3 },
+        { id: 3, name: "Team Gamma", participants: 5 },
+        { id: 4, name: "Team Delta", participants: 4 },
+      ]);
+      const initialScores = {};
+      [1, 2, 3, 4].forEach((teamId) => {
+        judges.forEach((judge) => {
+          initialScores[`${teamId}-${judge.id}`] = "";
+        });
+      });
+      setScores(initialScores);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleScoreChange = (teamId, judgeId, value) => {
+    const key = `${teamId}-${judgeId}`;
+    // Only allow numbers 0-100
+    if (value === "" || (Number(value) >= 0 && Number(value) <= 100)) {
+      setScores((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+    }
+  };
+
+  const handleSaveScores = async () => {
+    if (!selectedEvent) {
+      setMessageType("error");
+      setMessage("Please select an event first");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const scoreData = Object.entries(scores).map(([key, score]) => {
+        const [teamId, judgeId] = key.split("-");
+        return {
+          teamId: Number(teamId),
+          judgeId: Number(judgeId),
+          score: Number(score) || 0,
+        };
+      });
+
+      const response = await fetch(
+        `${API_BASE_URL}/events/${selectedEvent}/scores`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ scores: scoreData }),
+        },
+      );
+
+      if (!response.ok) throw new Error("Failed to save scores");
+
+      setMessageType("success");
+      setMessage("Scores saved successfully!");
+      setTimeout(() => setMessage(""), 3000);
+    } catch (err) {
+      console.error("Error saving scores:", err);
+      setMessageType("error");
+      setMessage("Failed to save scores. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const calculateTeamAverage = (teamId) => {
+    const teamScores = judges
+      .map((judge) => {
+        const key = `${teamId}-${judge.id}`;
+        const score = scores[key];
+        return score !== "" ? Number(score) : null;
+      })
+      .filter((s) => s !== null);
+    if (teamScores.length === 0) return "-";
+    const avg = teamScores.reduce((a, b) => a + b, 0) / teamScores.length;
+    return avg.toFixed(2);
+  };
+
+  const handleBulkUpdate = (teamId, value) => {
+    if (value === "" || (Number(value) >= 0 && Number(value) <= 100)) {
+      judges.forEach((judge) => {
+        const key = `${teamId}-${judge.id}`;
+        setScores((prev) => ({
+          ...prev,
+          [key]: value,
+        }));
+      });
+    }
+  };
+
+  // Mock data for display
+  const mockLeaderboard = [
     {
       teamName: "Nova Stream",
       category: "Sustainable Energy",
@@ -67,306 +243,228 @@ export default function Scoring() {
   ];
 
   return (
-    <section className="bg-surface font-body text-on-surface antialiased min-h-screen overflow-x-hidden">
-      {/* TopAppBar */}
-      <header className="flex justify-between items-center w-full px-8 py-4 h-20 sticky top-0 z-30 bg-white/70 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800">
-        <div className="flex items-center gap-6">
-          <h2 className="text-lg font-extrabold text-slate-900 font-headline">
-            Nexus Management
-          </h2>
-          <div className="relative focus-within:ring-2 focus-within:ring-blue-500/20 rounded-full">
-            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-              search
-            </span>
-            <input
-              className="bg-surface-container-low border-none rounded-full pl-12 pr-6 py-2 w-80 text-sm focus:bg-white focus:ring-0 transition-all outline-none"
-              placeholder="Search teams or judges..."
-              type="text"
-            />
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors">
-            <span className="material-symbols-outlined">notifications</span>
-          </button>
-          <button className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors">
-            <span className="material-symbols-outlined">help_outline</span>
-          </button>
-          <div className="flex items-center gap-3 ml-2 pl-4 border-l border-slate-200">
-            <div className="text-right">
-              <p className="text-xs font-bold text-slate-900">Admin User</p>
-              <p className="text-[10px] text-slate-500">Super Admin</p>
-            </div>
-            <img
-              className="w-10 h-10 rounded-full object-cover"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBtMqDMUaBBOwj-2gvbLH2Vatc0ChKSJQ4K6HJX5Vi42CdICGqPagIBhXpza_MqUrauzU_81qlgSmkqhBGlBKXRQB7Ot49DLR6limNiITTQA2DUpQNPlrYIgHe2uD394wi0e1_NPpTE47bXq1V8Xtmon7qlJBf0fBxHGXc0OQC7qW0gWUmM3BLRzkSDNzkm-mojkfr4lQDikCMiI2LggQAcggpE8ly1Ci4x5RwXTuEVPk8G4EDgv_DfyRI20vN8FU9S104E61CseeNs"
-              alt="Admin Avatar"
-            />
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content Canvas */}
-      <main className="min-h-screen p-8">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-          <div>
-            <nav className="flex gap-2 text-xs font-semibold text-primary mb-2">
-              <span>Events</span>
-              <span>/</span>
-              <span className="text-slate-400">
-                Global Innovation Summit 2024
-              </span>
-            </nav>
-            <h3 className="text-4xl font-extrabold font-headline text-on-surface tracking-tight">
-              Scoring Overview
-            </h3>
+    <section className="bg-surface text-on-surface min-h-screen font-body antialiased overflow-x-hidden">
+      <div className="min-h-screen">
+        {/* TopAppBar */}
+        <header className="flex justify-between items-center w-full px-8 py-4 h-20 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl sticky top-0 z-30 border-b border-slate-100 dark:border-slate-800">
+          <div className="flex items-center gap-8 flex-1">
+            <h2 className="text-lg font-extrabold text-slate-900 dark:text-slate-50 font-headline">
+              Scoring Panel
+            </h2>
           </div>
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <select className="appearance-none bg-surface-container-low border border-slate-200 dark:border-slate-800 rounded-xl pl-6 pr-12 py-3 text-sm font-semibold text-slate-700 focus:ring-primary/20 cursor-pointer min-w-[240px] outline-none">
-                <option>Global Innovation Summit 2024</option>
-                <option>Regional Startup Weekend</option>
-                <option>Tech Founders Expo</option>
-              </select>
-              <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                expand_more
-              </span>
-            </div>
-            <button className="bg-gradient-to-r from-[#0052cc] to-[#003d9b] text-white font-bold px-8 py-3 rounded-xl shadow-lg hover:scale-105 transition-transform flex items-center gap-2">
-              <span className="material-symbols-outlined text-lg">
-                ios_share
-              </span>
-              Export Data
+            <button className="p-2 text-slate-500 hover:text-blue-500 transition-colors">
+              <span className="material-symbols-outlined">help_outline</span>
             </button>
           </div>
-        </div>
+        </header>
 
-        {/* Stats Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <span className="material-symbols-outlined text-6xl text-primary">
-                leaderboard
-              </span>
-            </div>
+        <div className="px-8 pt-10 pb-12">
+          {/* Page Header */}
+          <div className="flex flex-col gap-4 mb-10">
             <div>
-              <p className="text-slate-500 font-medium text-sm mb-1 font-label">
-                Average Event Score
-              </p>
-              <h4 className="text-4xl font-black font-headline text-primary tracking-tighter">
-                84.2
-                <span className="text-lg text-slate-400 font-body font-bold">
-                  /100
+              <nav className="flex items-center gap-2 text-xs font-bold text-primary mb-2 uppercase tracking-tighter">
+                <span>Admin</span>
+                <span className="material-symbols-outlined text-[10px]">
+                  chevron_right
                 </span>
-              </h4>
-            </div>
-            <div className="mt-6 flex items-center gap-2 text-xs font-bold text-tertiary-container bg-tertiary-fixed px-3 py-1 rounded-full w-fit">
-              <span className="material-symbols-outlined text-sm">
-                trending_up
-              </span>
-              +2.4 from last year
-            </div>
-          </div>
-
-          <div className="bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              <span className="material-symbols-outlined text-6xl text-primary">
-                check_circle
-              </span>
-            </div>
-            <div>
-              <p className="text-slate-500 font-medium text-sm mb-1 font-label">
-                Evaluation Progress
+                <span>Scoring</span>
+              </nav>
+              <h1 className="text-4xl font-black text-on-background tracking-tight font-headline">
+                Event Scoring
+              </h1>
+              <p className="text-on-surface-variant mt-2 max-w-2xl">
+                Enter and manage scores for teams across all judges. Scores
+                range from 0-100.
               </p>
-              <h4 className="text-4xl font-black font-headline text-on-surface tracking-tighter">
-                78%
-              </h4>
-            </div>
-            <div className="mt-6 w-full bg-surface-container-low h-2 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-[#0052cc] to-[#003d9b]"
-                style={{ width: "78%" }}
-              ></div>
-            </div>
-            <p className="mt-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest font-label">
-              156 / 200 Teams Scored
-            </p>
-          </div>
-
-          <div className="bg-primary-container p-8 rounded-xl flex flex-col justify-between shadow-xl relative overflow-hidden text-white">
-            <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-            <div>
-              <p className="text-blue-100 font-medium text-sm mb-1 font-label">
-                Pending Discrepancies
-              </p>
-              <h4 className="text-4xl font-black font-headline tracking-tighter">
-                12
-              </h4>
-            </div>
-            <button className="mt-6 bg-white/20 hover:bg-white/30 transition-colors text-white text-xs font-bold py-2 px-4 rounded-lg w-fit backdrop-blur-sm z-10 cursor-pointer">
-              Review Flagged Scores
-            </button>
-          </div>
-        </div>
-
-        {/* Leaderboard Table */}
-        <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-          <div className="p-6 border-b border-surface-container-low flex justify-between items-center bg-white dark:bg-slate-900">
-            <h5 className="font-bold text-lg font-headline">
-              Live Scoring Leaderboard
-            </h5>
-            <div className="flex gap-2">
-              <button className="p-2 text-slate-400 hover:text-primary transition-colors">
-                <span className="material-symbols-outlined">filter_list</span>
-              </button>
-              <button className="p-2 text-slate-400 hover:text-primary transition-colors">
-                <span className="material-symbols-outlined">more_vert</span>
-              </button>
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-surface-container-low/50">
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider font-label">
-                    Team Name
-                  </th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider font-label">
-                    Total Score
-                  </th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider font-label">
-                    Breakdown (P/A/F/U/I)
-                  </th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider font-label">
-                    Assigned Judges
-                  </th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider font-label">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right font-label">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-surface-container-low">
-                {leaderboard.map((row, idx) => (
-                  <tr
-                    key={idx}
-                    className="hover:bg-surface-container-low/30 transition-colors group"
-                  >
-                    <td className="px-6 py-5">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-10 h-10 rounded-lg ${row.color} flex items-center justify-center font-bold font-headline`}
+          {/* Message Alert */}
+          {message && (
+            <div
+              className={`mb-6 px-6 py-4 rounded-xl flex items-center gap-3 ${
+                messageType === "success"
+                  ? "bg-tertiary-fixed/20 border border-tertiary/30 text-on-tertiary-fixed-variant"
+                  : "bg-error-container border border-error/30 text-on-error-container"
+              }`}
+            >
+              <span className="material-symbols-outlined">
+                {messageType === "success" ? "check_circle" : "error"}
+              </span>
+              <span>{message}</span>
+            </div>
+          )}
+
+          {/* Event Selector */}
+          <div className="bg-surface-container-lowest p-8 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-3 font-label">
+                  Select Event
+                </label>
+                <select
+                  value={selectedEvent}
+                  onChange={(e) => handleEventChange(e.target.value)}
+                  className="w-full px-4 py-3 bg-surface-container-low border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 text-on-surface"
+                >
+                  <option value="">-- Choose an event --</option>
+                  {events.map((event) => (
+                    <option key={event.id} value={event.id}>
+                      {event.name} ({event.status})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-3 font-label">
+                  Number of Judges
+                </label>
+                <div className="px-4 py-3 bg-surface-container-low border border-slate-200 rounded-lg text-on-surface font-medium">
+                  {judges.length}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Scoring Table */}
+          {selectedEvent && teams.length > 0 ? (
+            <div className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-slate-100 dark:border-slate-800">
+              <div className="px-8 py-6 bg-surface-container-low/50 border-b border-slate-100 dark:border-slate-800">
+                <h3 className="font-bold text-lg font-headline">
+                  Team Scores ({teams.length} teams)
+                </h3>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-surface-container-low/20">
+                      <th className="px-6 py-4 text-xs font-black text-slate-500 uppercase tracking-widest font-label min-w-48">
+                        Team Name
+                      </th>
+                      {judges.map((judge) => (
+                        <th
+                          key={judge.id}
+                          className="px-4 py-4 text-xs font-black text-slate-500 uppercase tracking-widest font-label text-center min-w-24"
+                          title={judge.name}
                         >
-                          {row.initials}
-                        </div>
-                        <div>
-                          <p className="font-bold text-slate-900 dark:text-slate-100">
-                            {row.teamName}
-                          </p>
-                          <p className="text-[10px] text-slate-500 break-words max-w-[120px] leading-tight mt-0.5">
-                            {row.category}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <span
-                        className={`font-black text-lg font-headline ${row.score === "--.-" ? "text-slate-400" : "text-primary"}`}
+                          <div className="truncate text-[10px]">
+                            {judge.name.split(" ")[0]}
+                          </div>
+                        </th>
+                      ))}
+                      <th className="px-4 py-4 text-xs font-black text-slate-500 uppercase tracking-widest font-label text-center min-w-20">
+                        Average
+                      </th>
+                      <th className="px-6 py-4 text-xs font-black text-slate-500 uppercase tracking-widest font-label text-center min-w-32">
+                        Quick Fill
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {teams.map((team) => (
+                      <tr
+                        key={team.id}
+                        className="hover:bg-surface-container-low/50 transition-colors"
                       >
-                        {row.score}
-                      </span>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex gap-1">
-                        {["P", "A", "F", "U", "I"].map((key) => (
-                          <div
-                            key={key}
-                            className="w-8 h-8 rounded bg-slate-100 dark:bg-slate-800 flex flex-col items-center justify-center"
-                            title={key}
+                        <td className="px-6 py-6">
+                          <div>
+                            <p className="font-bold text-on-surface">
+                              {team.name}
+                            </p>
+                            <p className="text-xs text-slate-500 mt-1">
+                              {team.participants} participants
+                            </p>
+                          </div>
+                        </td>
+                        {judges.map((judge) => (
+                          <td
+                            key={`${team.id}-${judge.id}`}
+                            className="px-4 py-6 text-center"
                           >
-                            <span className="text-[8px] font-bold text-slate-400 uppercase font-headline">
-                              {key}
-                            </span>
-                            <span
-                              className={`text-[10px] font-bold ${row.score === "--.-" ? "text-slate-300 dark:text-slate-600" : "text-slate-700 dark:text-slate-300"} font-label`}
-                            >
-                              {row.breakdown[key]}
-                            </span>
-                          </div>
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={scores[`${team.id}-${judge.id}`] || ""}
+                              onChange={(e) =>
+                                handleScoreChange(
+                                  team.id,
+                                  judge.id,
+                                  e.target.value,
+                                )
+                              }
+                              placeholder="-"
+                              className="w-full px-2 py-2 bg-surface-container-low border border-slate-200 rounded text-center focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm font-medium"
+                            />
+                          </td>
                         ))}
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex -space-x-2">
-                        {row.judges.map((img, i) => (
-                          <img
-                            key={i}
-                            className="w-8 h-8 rounded-full border-2 border-white dark:border-slate-900 object-cover"
-                            src={img}
-                            alt="Judge"
+                        <td className="px-4 py-6 text-center">
+                          <div className="text-sm font-bold text-primary">
+                            {calculateTeamAverage(team.id)}
+                          </div>
+                        </td>
+                        <td className="px-6 py-6 text-center">
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            placeholder="Fill all"
+                            onChange={(e) =>
+                              handleBulkUpdate(team.id, e.target.value)
+                            }
+                            className="w-full px-2 py-2 bg-surface-container-low border border-slate-200 rounded text-center focus:outline-none focus:ring-2 focus:ring-secondary/20 text-xs"
                           />
-                        ))}
-                        {row.extraJudges && (
-                          <div className="w-8 h-8 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-500 font-headline">
-                            {row.extraJudges}
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <span
-                        className={`px-3 py-1 rounded-full text-[10px] font-bold ${row.statusColor} uppercase tracking-wide`}
-                      >
-                        {row.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-5 text-right">
-                      <button className="text-primary font-bold text-xs hover:underline decoration-2 underline-offset-4 cursor-pointer">
-                        View Scorecard
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-          <div className="p-6 bg-surface-container-low/20 flex justify-between items-center border-t border-slate-100 dark:border-slate-800">
-            <p className="text-xs font-medium text-slate-500">
-              Showing 1-4 of 200 teams
-            </p>
-            <div className="flex gap-2">
-              <button className="w-10 h-10 rounded-lg flex items-center justify-center bg-white dark:bg-slate-900 shadow-sm text-slate-400 hover:text-primary transition-colors border border-slate-100 dark:border-slate-800">
-                <span className="material-symbols-outlined">chevron_left</span>
-              </button>
-              <button className="w-10 h-10 rounded-lg flex items-center justify-center bg-primary-container text-white shadow-md font-bold text-sm">
-                1
-              </button>
-              <button className="w-10 h-10 rounded-lg flex items-center justify-center bg-white dark:bg-slate-900 shadow-sm text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-slate-100 dark:border-slate-800">
-                2
-              </button>
-              <button className="w-10 h-10 rounded-lg flex items-center justify-center bg-white dark:bg-slate-900 shadow-sm text-slate-600 dark:text-slate-300 font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-slate-100 dark:border-slate-800">
-                3
-              </button>
-              <button className="w-10 h-10 rounded-lg flex items-center justify-center bg-white dark:bg-slate-900 shadow-sm text-slate-400 hover:text-primary transition-colors border border-slate-100 dark:border-slate-800">
-                <span className="material-symbols-outlined">chevron_right</span>
-              </button>
+              {/* Footer with Save Button */}
+              <div className="px-8 py-6 flex items-center justify-between border-t border-slate-100 dark:border-slate-800 bg-surface-container-low/20">
+                <p className="text-xs text-slate-500 font-medium">
+                  {teams.length} teams total
+                </p>
+                <button
+                  onClick={handleSaveScores}
+                  disabled={saving}
+                  className="flex items-center gap-2 bg-primary text-on-primary px-8 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span className="material-symbols-outlined text-lg">
+                    {saving ? "hourglass_empty" : "save"}
+                  </span>
+                  {saving ? "Saving..." : "Save Scores"}
+                </button>
+              </div>
             </div>
-          </div>
+          ) : selectedEvent ? (
+            <div className="bg-surface-container-lowest p-12 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 text-center">
+              {loading ? (
+                <div className="text-slate-500">Loading teams...</div>
+              ) : (
+                <div className="text-slate-500">
+                  <span className="material-symbols-outlined text-4xl block mb-3 mx-auto">
+                    groups
+                  </span>
+                  No teams registered for this event
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="bg-surface-container-lowest p-12 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 text-center">
+              <span className="material-symbols-outlined text-4xl text-slate-300 block mb-3 mx-auto">
+                event
+              </span>
+              <p className="text-slate-500">
+                Select an event to start entering scores
+              </p>
+            </div>
+          )}
         </div>
-      </main>
-
-      {/* FAB for Quick Audit */}
-      <button className="fixed bottom-10 right-10 w-16 h-16 rounded-full bg-gradient-to-r from-[#0052cc] to-[#003d9b] text-white shadow-2xl flex items-center justify-center hover:scale-110 transition-transform active:scale-95 group z-50 cursor-pointer">
-        <span className="material-symbols-outlined text-2xl">add_chart</span>
-        <span className="absolute right-full mr-4 bg-slate-900 text-white text-xs font-bold py-2 px-4 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-          New Scoring Audit
-        </span>
-      </button>
+      </div>
     </section>
   );
 }

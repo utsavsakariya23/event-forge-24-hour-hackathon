@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 
-const eventRows = [
+const initialEvents = [
   {
     id: 1,
     initial: "AI",
@@ -39,37 +39,108 @@ const eventRows = [
   },
 ];
 
-const judgeAssignments = [
-  {
-    id: 1,
-    name: "Dr. Aris Thorne",
-    role: "AI Specialist",
-    tag: "AI Lab",
-    tagClass: "bg-primary-fixed text-primary",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuCyX8cBugzg9xU8iK5oD9r44sDpgetXT2ZJVEns2rphQloIynQ9GuJTRgcdcKgOqOLcJ4jJTwnW5VVK2Rhi5ZjMUvBSdRf-YczYymCkFH-DqjZ9vTe53RpgB_WSefozaqDwaV9DrrqfEHy6hCgn_pNzDCdPoIQte1JZiGVpDdt-BXNhnNcKOleL0f8DWLfDSd0ggCD5IWrCr56pGj4uIsMOsBrHwBWC2-WiF72AW1jidJDIcugYYTDDWqyk7E_Bx8hEe17rPThdY5mX",
-  },
-  {
-    id: 2,
-    name: "Elena Rodriguez",
-    role: "Senior UX Lead",
-    tag: "Design Sprint",
-    tagClass: "bg-secondary-fixed text-on-secondary-container",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDi24LI6wU72ybYA7k7KPbvUWEwII81g1y9lmLF13ps0_MeF9-IcG2g85UrBMi2WG4YiFK-SDQaxVGbYyKtc-uQiVMqgoCWwO8iLamaqOtJ4TMS604PMPnEsf7fzAGwyb8Wo_NNhZ2w_atnjVv-EoRo0IFOn9Ac3T_-Prp9a_VKgb8ntGmbEl1reESTpTPefNdC15nqmGQjGfLAjXQ5sifl63GZuwyffCeUB0qaJEhOysJeLKwIPRaW2ddBX_uzlsFRlp4W9Ms5Do3v",
-  },
-  {
-    id: 3,
-    name: "Marcus Chen",
-    role: "Venture Partner",
-    tag: "Unassigned",
-    tagClass: "bg-surface-container-high text-outline",
-    avatar:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuB8l8Uf_WtrbhFg3GYVoWFJN0DJVgVTtkFwpWl1RvWiAW7FXqTJNc2PoUPrFi961-lJEcBvYLOTJKUTfbOBilO-ep-Fi0GUMRohcj22Sre0InzV8IyEgilUcgbk7AXyKVvffeYxV8OtZFrgjF4YGFDhOSjjaMZWR0cSySCaKyUo_5mgmHlVq-7Ow0tKL4wnzAYx1B49XjL6UtF7PT0tgfX0cSai25BhM-SkDtTSdg1C_LRt9sC2TNBchr0kwkc8oiHaMWzuY6LjoVJA",
-  },
-];
-
 export default function EventManagement() {
+  const [events, setEvents] = useState(initialEvents);
+  const [showModal, setShowModal] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    type: "",
+    venue: "",
+    date: "",
+    status: "Draft",
+    teams: "0 / 50",
+  });
+
+  const handleOpenModal = (event = null) => {
+    if (event) {
+      setEditingId(event.id);
+      setFormData({
+        name: event.name,
+        type: event.type,
+        venue: event.venue,
+        date: event.date,
+        status: event.status,
+        teams: event.teams,
+      });
+    } else {
+      setEditingId(null);
+      setFormData({
+        name: "",
+        type: "",
+        venue: "",
+        date: "",
+        status: "Draft",
+        teams: "0 / 50",
+      });
+    }
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setEditingId(null);
+    setFormData({
+      name: "",
+      type: "",
+      venue: "",
+      date: "",
+      status: "Draft",
+      teams: "0 / 50",
+    });
+  };
+
+  const handleFormChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSaveEvent = () => {
+    if (!formData.name || !formData.type || !formData.venue || !formData.date) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    if (editingId) {
+      setEvents(
+        events.map((e) =>
+          e.id === editingId
+            ? {
+                ...e,
+                name: formData.name,
+                type: formData.type,
+                venue: formData.venue,
+                date: formData.date,
+                status: formData.status,
+                teams: formData.teams,
+              }
+            : e,
+        ),
+      );
+    } else {
+      const newEvent = {
+        id: Math.max(...events.map((e) => e.id), 0) + 1,
+        initial: formData.name.substring(0, 2).toUpperCase(),
+        initialClass: "bg-primary-fixed text-primary",
+        name: formData.name,
+        type: formData.type,
+        venue: formData.venue,
+        date: formData.date,
+        status: formData.status,
+        statusClass: "bg-tertiary-fixed text-on-tertiary-fixed-variant",
+        teams: formData.teams,
+      };
+      setEvents([...events, newEvent]);
+    }
+
+    handleCloseModal();
+  };
+
+  const handleDeleteEvent = (id) => {
+    setEvents(events.filter((e) => e.id !== id));
+    setDeleteConfirm(null);
+  };
+
   return (
     <section className="font-body text-on-surface">
       <header className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -96,7 +167,10 @@ export default function EventManagement() {
               className="w-full rounded-full border border-transparent bg-surface-container-low py-3 pl-12 pr-4 text-sm outline-none transition focus:border-primary/20 focus:ring-2 focus:ring-primary/20 sm:w-72"
             />
           </label>
-          <button className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-primary px-6 py-3 text-sm font-bold text-white shadow-[0px_12px_28px_rgba(0,61,155,0.25)] transition hover:brightness-105 active:scale-95">
+          <button
+            onClick={() => handleOpenModal()}
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-primary px-6 py-3 text-sm font-bold text-white shadow-[0px_12px_28px_rgba(0,61,155,0.25)] transition hover:brightness-105 active:scale-95"
+          >
             <span className="material-symbols-outlined text-lg">add</span>
             Create New Event
           </button>
@@ -221,7 +295,7 @@ export default function EventManagement() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-surface-container-low">
-                {eventRows.map((event) => (
+                {events.map((event) => (
                   <tr
                     key={event.id}
                     className="group transition hover:bg-surface-container-low/30"
@@ -256,15 +330,21 @@ export default function EventManagement() {
                       {event.teams}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex justify-end gap-1.5 opacity-0 transition group-hover:opacity-100">
-                        <button className="rounded-lg p-1.5 text-secondary hover:bg-surface-container-low hover:text-primary">
+                      <div className="flex justify-end gap-1.5">
+                        <button
+                          onClick={() => handleOpenModal(event)}
+                          className="rounded-lg p-1.5 text-secondary hover:bg-surface-container-low hover:text-primary transition"
+                        >
                           <span className="material-symbols-outlined text-lg">
                             edit
                           </span>
                         </button>
-                        <button className="rounded-lg p-1.5 text-secondary hover:bg-surface-container-low hover:text-primary">
+                        <button
+                          onClick={() => setDeleteConfirm(event.id)}
+                          className="rounded-lg p-1.5 text-secondary hover:bg-surface-container-low hover:text-error transition"
+                        >
                           <span className="material-symbols-outlined text-lg">
-                            visibility
+                            delete
                           </span>
                         </button>
                       </div>
@@ -277,181 +357,157 @@ export default function EventManagement() {
         </div>
       </section>
 
-      <section className="grid grid-cols-12 gap-6">
-        <article className="col-span-12 rounded-2xl border border-outline-variant/40 bg-surface-container-lowest p-6 lg:col-span-7">
-          <div className="mb-6 flex items-center gap-2">
-            <div className="h-6 w-1 rounded-full bg-primary" />
-            <h3 className="font-headline text-3xl font-bold tracking-tight">
-              Configure Event
-            </h3>
-          </div>
+      {/* Add/Edit Event Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-2xl rounded-2xl bg-surface-container-lowest border border-outline-variant/40 p-6 shadow-2xl">
+            <h2 className="mb-6 font-headline text-2xl font-bold">
+              {editingId ? "Edit Event" : "Create New Event"}
+            </h2>
 
-          <form className="space-y-4">
-            <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-outline">
-                Event Name
-              </label>
-              <input
-                type="text"
-                defaultValue="New Global Hackathon"
-                className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-sm outline-none ring-primary/20 transition focus:ring-2"
-              />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
+            <form className="space-y-4">
               <div>
                 <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-outline">
-                  Date Range
+                  Event Name *
                 </label>
                 <input
                   type="text"
-                  placeholder="Select dates"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleFormChange}
+                  placeholder="Enter event name"
                   className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-sm outline-none ring-primary/20 transition focus:ring-2"
                 />
               </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-outline">
+                    Event Type *
+                  </label>
+                  <input
+                    type="text"
+                    name="type"
+                    value={formData.type}
+                    onChange={handleFormChange}
+                    placeholder="e.g., Hackathon, Workshop"
+                    className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-sm outline-none ring-primary/20 transition focus:ring-2"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-outline">
+                    Status
+                  </label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleFormChange}
+                    className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-sm outline-none ring-primary/20 transition focus:ring-2"
+                  >
+                    <option>Draft</option>
+                    <option>Live</option>
+                    <option>Complete</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-outline">
+                    Date Range *
+                  </label>
+                  <input
+                    type="text"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleFormChange}
+                    placeholder="e.g., Oct 12 - 14, 2024"
+                    className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-sm outline-none ring-primary/20 transition focus:ring-2"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-outline">
+                    Venue *
+                  </label>
+                  <input
+                    type="text"
+                    name="venue"
+                    value={formData.venue}
+                    onChange={handleFormChange}
+                    placeholder="City or Online"
+                    className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-sm outline-none ring-primary/20 transition focus:ring-2"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-outline">
-                  Venue
+                  Teams Capacity
                 </label>
                 <input
                   type="text"
-                  placeholder="City or Online"
+                  name="teams"
+                  value={formData.teams}
+                  onChange={handleFormChange}
+                  placeholder="e.g., 0 / 50"
                   className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-sm outline-none ring-primary/20 transition focus:ring-2"
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-outline">
-                Description
-              </label>
-              <textarea
-                rows="3"
-                defaultValue="Enter high-level details about the event purpose and key takeaways..."
-                className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-sm outline-none ring-primary/20 transition focus:ring-2"
-              />
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-outline">
-                  Reg. Fee ($)
-                </label>
-                <input
-                  type="number"
-                  defaultValue="49"
-                  className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-sm outline-none ring-primary/20 transition focus:ring-2"
-                />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-outline">
-                  Max Teams
-                </label>
-                <input
-                  type="number"
-                  defaultValue="100"
-                  className="w-full rounded-xl bg-surface-container-low px-4 py-3 text-sm outline-none ring-primary/20 transition focus:ring-2"
-                />
-              </div>
-              <div className="flex items-end">
+              <div className="flex flex-wrap items-center justify-end gap-3 border-t border-surface-container-low pt-4">
                 <button
                   type="button"
-                  className="inline-flex h-[46px] w-full items-center justify-center gap-2 rounded-xl bg-surface-container-high text-sm font-bold text-primary transition hover:bg-primary hover:text-white"
+                  onClick={handleCloseModal}
+                  className="px-5 py-2 text-sm font-bold text-outline transition hover:text-on-surface"
                 >
-                  <span className="material-symbols-outlined text-lg">
-                    image
-                  </span>
-                  Hero Image
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveEvent}
+                  className="rounded-full bg-gradient-primary px-6 py-2.5 text-sm font-bold text-white shadow-[0px_8px_24px_rgba(0,61,155,0.25)] transition hover:brightness-105 active:scale-95"
+                >
+                  {editingId ? "Update Event" : "Create Event"}
                 </button>
               </div>
-            </div>
+            </form>
+          </div>
+        </div>
+      )}
 
-            <div className="flex flex-wrap items-center justify-end gap-3 border-t border-surface-container-low pt-3">
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-surface-container-lowest border border-outline-variant/40 p-6 shadow-2xl">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="grid h-10 w-10 place-items-center rounded-full bg-error-container">
+                <span className="material-symbols-outlined text-error">
+                  delete_outline
+                </span>
+              </div>
+              <h2 className="font-headline text-xl font-bold">Delete Event?</h2>
+            </div>
+            <p className="mb-6 text-sm text-secondary">
+              Are you sure you want to delete this event? This action cannot be
+              undone.
+            </p>
+            <div className="flex gap-3 justify-end">
               <button
-                type="button"
+                onClick={() => setDeleteConfirm(null)}
                 className="px-5 py-2 text-sm font-bold text-outline transition hover:text-on-surface"
               >
-                Discard Draft
+                Cancel
               </button>
               <button
-                type="button"
-                className="rounded-full bg-gradient-primary px-6 py-2.5 text-sm font-bold text-white shadow-[0px_8px_24px_rgba(0,61,155,0.25)] transition hover:brightness-105 active:scale-95"
+                onClick={() => handleDeleteEvent(deleteConfirm)}
+                className="rounded-lg bg-error px-5 py-2 text-sm font-bold text-white transition hover:brightness-110 active:scale-95"
               >
-                Save Event Configuration
+                Delete
               </button>
             </div>
-          </form>
-        </article>
-
-        <div className="col-span-12 space-y-4 lg:col-span-5">
-          <article className="rounded-2xl border border-outline-variant/40 bg-surface-container-lowest p-5">
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <h3 className="font-headline text-2xl font-bold">
-                  Judge Assignments
-                </h3>
-                <p className="text-xs text-secondary">
-                  Assign experts to current events
-                </p>
-              </div>
-              <button className="grid h-9 w-9 place-items-center rounded-full bg-primary-fixed text-primary transition hover:bg-primary hover:text-white">
-                <span className="material-symbols-outlined text-lg">
-                  person_add
-                </span>
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              {judgeAssignments.map((judge) => (
-                <div
-                  key={judge.id}
-                  className="flex items-center justify-between rounded-xl bg-white p-3 shadow-sm"
-                >
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={judge.avatar}
-                      alt={judge.name}
-                      className="h-11 w-11 rounded-lg object-cover"
-                    />
-                    <div>
-                      <p className="text-sm font-bold">{judge.name}</p>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-outline">
-                        {judge.role}
-                      </p>
-                    </div>
-                  </div>
-                  <span
-                    className={`rounded-md px-2 py-1 text-[10px] font-bold ${judge.tagClass}`}
-                  >
-                    {judge.tag}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </article>
-
-          <article className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-inverse-surface to-[#171c24] p-5 text-white">
-            <span className="material-symbols-outlined absolute -right-6 -bottom-8 text-[110px] text-white/5">
-              auto_awesome
-            </span>
-            <h4 className="mb-1 font-headline text-xl font-bold">
-              Automated Scoring
-            </h4>
-            <p className="mb-4 text-sm text-slate-300">
-              Enable AI-assisted initial screening for faster judge reviews.
-              Available for Pro events.
-            </p>
-            <div className="flex items-center gap-2">
-              <div className="flex h-5 w-10 items-center rounded-full bg-primary p-0.5">
-                <div className="ml-auto h-4 w-4 rounded-full bg-white" />
-              </div>
-              <span className="text-xs font-bold uppercase tracking-widest">
-                Feature Enabled
-              </span>
-            </div>
-          </article>
+          </div>
         </div>
-      </section>
+      )}
 
       <button className="fixed bottom-8 right-8 z-30 grid h-12 w-12 place-items-center rounded-full bg-gradient-primary text-white shadow-[0px_14px_30px_rgba(0,61,155,0.35)] transition hover:brightness-105 active:scale-95">
         <span className="material-symbols-outlined text-xl">bolt</span>
