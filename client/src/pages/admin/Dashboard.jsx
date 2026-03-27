@@ -37,7 +37,7 @@ export default function AdminDashboard() {
           bgClass="bg-purple-50" textClass="text-secondary" colorClass="text-on-tertiary-fixed-variant bg-tertiary-fixed"
         />
         <KpiCard 
-          title="Total Revenue" value="$84.2k" subtitle="USD Net"
+          title="Total Revenue" value="₹84.2k" subtitle="USD Net"
           icon="payments" trendValue="+24%" trendType="up"
           bgClass="bg-green-50" textClass="text-emerald-700" colorClass="text-emerald-800 bg-emerald-100"
         />

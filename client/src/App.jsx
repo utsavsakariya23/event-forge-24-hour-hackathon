@@ -15,10 +15,15 @@ import Leaderboard from './pages/event/Leaderboard';
 
 // Team Pages
 import Directory from './pages/team/Directory';
-import Registration from './pages/team/Registration';
+import TeamRegistration from './pages/team/Registration';
 
 // Judge Pages
 import JudgeDashboard from './pages/judge/Dashboard';
+
+// Auth & User Pages
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import Profile from './pages/user/Profile';
 
 function App() {
   return (
@@ -29,9 +34,14 @@ function App() {
         <Route path="/events/:id" element={<EventDetails />} />
         <Route path="/events/:id/leaderboard" element={<Leaderboard />} />
         
+        {/* Auth & User Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<Profile />} />
+
         {/* Team Routes */}
         <Route path="/teams" element={<Directory />} />
-        <Route path="/register" element={<Registration />} />
+        <Route path="/teams/register" element={<TeamRegistration />} />
         
         {/* Judge Routes */}
         <Route path="/judge/dashboard" element={<JudgeDashboard />} />
