@@ -12,9 +12,12 @@ await connectDB() // connect database
 app.use(cors());
 app.use(express.json());
 
+// routes
 app.get('/', (req,res)=>{ // in browser, localhost:3000
     res.send('API is working')
 })
+// auth route
+// app.use('/api/auth', authRouter)
 
 
 const PORT = process.env.PORT || 3000;
