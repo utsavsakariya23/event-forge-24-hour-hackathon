@@ -1,348 +1,303 @@
-import React from "react";
+import React, { useState } from "react";
 
 export default function ParticipantManagement() {
-  const participants = [
+  const [participants, setParticipants] = useState([
     {
-      teamName: "CyberSentinels",
-      teamId: "#9921",
-      leaderName: "David Chen",
-      leaderAvatar:
+      id: 1,
+      name: "David Chen",
+      email: "david.chen@example.com",
+      role: "Team Lead",
+      team: "CyberSentinels",
+      avatar:
         "https://lh3.googleusercontent.com/aida-public/AB6AXuC54B4aEJax67h93Tt7YO35FxZXfJlx5r_eEUUowVYL9wsVuUNrNb-br3RJaajU8rui6zGTCidICmFJ5hym-OsG2JIqaS4GYOtyODmyEkpo68V7omD1xuKek0BX8Q6VNmrfH_uj1uONd2-4e9HifXQyg4iEbOTDTaonAi62na2rjUKxYbwKlC4IKcHMI6h9TCv6-DYbOascgRTtrpfKAX6Szydv7zJSC1_L-k51ZZxXrxingfbi4PkaHm_YOkNC85KZoADsOMndd4h-",
-      membersCount: 4,
-      problem: "Decentralized Threat Intelligence",
-      date: "Oct 12, 2023",
-      status: "Verified",
-      statusColor: "bg-tertiary-fixed text-on-tertiary-fixed-variant",
-      statusIcon: "check_circle",
+      joinDate: "Oct 12, 2024",
+      status: "Active",
     },
     {
-      teamName: "EcoFlow AI",
-      teamId: "#9844",
-      leaderName: "Sarah Jenkins",
-      leaderAvatar:
+      id: 2,
+      name: "Sarah Jenkins",
+      email: "sarah.jenkins@example.com",
+      role: "Developer",
+      team: "EcoFlow AI",
+      avatar:
         "https://lh3.googleusercontent.com/aida-public/AB6AXuAVMprmgQ3p09cecujI7CfLD0xtbj-OeF2vqriF_i_QIPDvCdMGGyT1BKHag69fl5eJe_k1BIj92g6UL2v9GWP0-btrF08Y4-ODqZIYbwYkD5AQXKnVeHGrThFOKgeITyCEcreiPq5BUySgiVsFwlX7fnry09DK8ZvjpFk4OVxPZpMbriFXxopUsEWdRHJd2tAw-vIMJV6oT8WdMITfLQ7Qsb13M98NUVDlI5z3htrvDbvvHiqB3HCWEXpST0oapm4pnPWJ58AULtQ5",
-      membersCount: 3,
-      problem: "Optimizing Urban Waste Routes",
-      date: "Oct 14, 2023",
-      status: "Pending",
-      statusColor: "bg-error-container text-on-error-container",
-      statusIcon: "pending",
+      joinDate: "Oct 12, 2024",
+      status: "Active",
     },
     {
-      teamName: "Visionary Lab",
-      teamId: "#9710",
-      leaderName: "Marcus Thorne",
-      leaderAvatar:
+      id: 3,
+      name: "Marcus Thorne",
+      email: "marcus.thorne@example.com",
+      role: "Team Lead",
+      team: "Visionary Lab",
+      avatar:
         "https://lh3.googleusercontent.com/aida-public/AB6AXuCRImNXFhsVnmsF2ew8oBn-OTuISp54-HfEgDhyzEP3cWuubDtJFFoaoNq55levp_DdKsxaZbpEwtGTFr19JsJxkrR2pgEekGVT9Pex-hqodTNGmxip8cdU5P5-hyFqOq07bcC8EEFiQvJmGVIMsyeoU5_nSF3vk5avhieHPiAbz0bWQlPUZpYdx_nWufp9ksQsszWezXBSFbbaw6G500j4J1HjmaLe7ucQmf9pZ1ddTYTe9dHmVDr6uY03iX_IMDbOd2z2snzfC6g1",
-      membersCount: 2,
-      problem: "AR for Accessibility Education",
-      date: "Oct 15, 2023",
-      status: "Verified",
-      statusColor: "bg-tertiary-fixed text-on-tertiary-fixed-variant",
-      statusIcon: "check_circle",
+      joinDate: "Oct 14, 2024",
+      status: "Active",
     },
     {
-      teamName: "Quantum Core",
-      teamId: "#9662",
-      leaderName: "Elena Rodriguez",
-      leaderAvatar:
+      id: 4,
+      name: "Elena Rodriguez",
+      email: "elena.rodriguez@example.com",
+      role: "Designer",
+      team: "Quantum Core",
+      avatar:
         "https://lh3.googleusercontent.com/aida-public/AB6AXuDLD32-aYtMVwMAB1mWPEhlw_6dYGhPPgLFLSb4gAxaT8xSO7MjE9LSZLhoMB-uUvmo3aylqann4kPics3XIjmYtQ0z7fol4SFuqWpB0r5wr6DQ-qvf91hW7u_CfpDrLsiEFcYjdq6l55RADoE0Pg-0r3vfa3VtWlGZmJhVG4E8cYDp0s67oRNvFa1S-CTqn_njx-WuXMRN8IDqDTDHXE2teon--LrUrdSUr_qX4A50MI5S11-DPpXa3mN8joxPKiJ1LHhWl2kTm7fb",
-      membersCount: 4,
-      problem: "Post-Quantum Cryptography Layer",
-      date: "Oct 18, 2023",
+      joinDate: "Oct 15, 2024",
       status: "Pending",
-      statusColor: "bg-error-container text-on-error-container",
-      statusIcon: "pending",
     },
-  ];
+    {
+      id: 5,
+      name: "James Park",
+      email: "james.park@example.com",
+      role: "Backend Developer",
+      team: "EcoFlow AI",
+      avatar:
+        "https://lh3.googleusercontent.com/aida-public/AB6AXuBXQwdvho8Zgs6yf6Pz_TiuVMg_HS0eAcmtTczMRrixqu8TxVA6jaKTi55mNGeT2qk3bf0h-hE1q_B3mYYM4RI1fDSffyRPnDFQHChRVJGK5GLPbVaOnA6etysuQ9gIKZl9fIGUDDYiKf0PI3MmPe-AjEkTgcLA1w92uTsY9mO9iA_6eLI6DBPiWyMDR2-RBlwn8Nqtuppf1m3ZXBOAigOMB5xiUDU9m3w5KTs27ZYhZ61_a-mr9dkdbtFIMBdL5JRUXWyuefSFKm85",
+      joinDate: "Oct 16, 2024",
+      status: "Active",
+    },
+    {
+      id: 6,
+      name: "Lisa Chen",
+      email: "lisa.chen@example.com",
+      role: "Researcher",
+      team: "EcoFlow AI",
+      avatar:
+        "https://lh3.googleusercontent.com/aida-public/AB6AXuABqhk27IY1_Xr6OgmFcBhrQUqiaWfGgK_z7DYHETU-Y-kpKVfUemQR3KYElT4xKMXR0S_CmA6u3fkWr_6xXP-LADVkXdg8zmM1jhZCGesN1iG227BpMgX0SOfCADjJO28URZ4mylLw1RNGwr0y4GzTxQqAmcoRPOVN_6jmSr4sIM1cxXCFb7d6SGR_wnpoynlqxXNrykbtEQ4UqfbOqXmAM36or_6agKqD0WzE4H3Dyoqi2VuGVWjEt55Lyp-DvzMtz-Z8n3nkZNho",
+      joinDate: "Oct 17, 2024",
+      status: "Active",
+    },
+    {
+      id: 7,
+      name: "Alex Rivera",
+      email: "alex.rivera@example.com",
+      role: "Frontend Developer",
+      team: "CyberSentinels",
+      avatar:
+        "https://lh3.googleusercontent.com/aida-public/AB6AXuDvZ-iPF1iacjNPQTsz-mm17flAiR_HkYEC38mUXRbQuMhx7H05h_E6iAUZyGm8LCEk6KspRiaeZS_8W80e96HfmIFyT_N7X24J2nNu0k-XRhqeJt-_4ehkWD7fiimT8Lj7oBuf6A05dlOIrXGc3TiUml_KyA_oH_HavMsTTdt0YvI5-HxUa_ds83oft_P187IMU2A6h89Tb8By661UHanjgi8-At0U5StHB9FmcUoZXH4XL1d6ENNATZ-WNhjVuWxre92tl1W9xv1c",
+      joinDate: "Oct 18, 2024",
+      status: "Active",
+    },
+    {
+      id: 8,
+      name: "Nina Petrov",
+      email: "nina.petrov@example.com",
+      role: "UI/UX Designer",
+      team: "Visionary Lab",
+      avatar:
+        "https://lh3.googleusercontent.com/aida-public/AB6AXuCyX8cBugzg9xU8iK5oD9r44sDpgetXT2ZJVEns2rphQloIynQ9GuJTRgcdcKgOqOLcJ4jJTwnW5VVK2Rhi5ZjMUvBSdRf-YczYymCkFH-DqjZ9vTe53RpgB_WSefozaqDwaV9DrrqfEHy6hCgn_pNzDCdPoIQte1JZiGVpDdt-BXNhnNcKOleL0f8DWLfDSd0ggCD5IWrCr56pGj4uIsMOsBrHwBWC2-WiF72AW1jidJDIcugYYTDDWqyk7E_Bx8hEe17rPThdY5mX",
+      joinDate: "Oct 19, 2024",
+      status: "Pending",
+    },
+  ]);
+
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+
+  const handleDeleteParticipant = (id) => {
+    setParticipants(participants.filter((p) => p.id !== id));
+    setDeleteConfirm(null);
+  };
 
   return (
-    <section className="bg-surface text-on-surface min-h-screen font-body antialiased overflow-x-hidden">
-      <div className="min-h-screen">
-        {/* TopAppBar */}
-        <header className="flex justify-between items-center w-full px-8 py-4 h-20 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl sticky top-0 z-30 border-b border-slate-100 dark:border-slate-800">
-          <div className="flex items-center gap-4 flex-1">
-            <div className="relative w-full max-w-md">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">
-                search
-              </span>
-              <input
-                className="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-                placeholder="Search teams or members..."
-                type="text"
-              />
-            </div>
+    <section className="font-body text-on-surface">
+      <header className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="mb-1 flex items-center gap-2 text-xs font-medium text-secondary">
+            <span>Admin</span>
+            <span className="material-symbols-outlined text-sm">
+              chevron_right
+            </span>
+            <span className="text-primary">Participants</span>
+          </p>
+          <h1 className="font-headline text-4xl font-extrabold tracking-tight">
+            Participants Management
+          </h1>
+        </div>
+        <div className="flex gap-3">
+          <label className="relative block">
+            <span className="material-symbols-outlined pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-outline">
+              search
+            </span>
+            <input
+              type="text"
+              placeholder="Search participants..."
+              className="w-full rounded-full border border-transparent bg-surface-container-low py-3 pl-12 pr-4 text-sm outline-none transition focus:border-primary/20 focus:ring-2 focus:ring-primary/20 sm:w-72"
+            />
+          </label>
+        </div>
+      </header>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/40 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-outline">
+              Total Participants
+            </p>
+            <span className="material-symbols-outlined text-primary text-2xl">
+              person
+            </span>
           </div>
-          <div className="flex items-center gap-6">
-            <button className="text-on-surface-variant hover:text-primary transition-colors">
-              <span className="material-symbols-outlined">notifications</span>
-            </button>
-            <button className="text-on-surface-variant hover:text-primary transition-colors">
-              <span className="material-symbols-outlined">help_outline</span>
-            </button>
-            <div className="flex items-center gap-3 pl-4 border-l border-outline-variant/30">
-              <div className="text-right">
-                <p className="text-sm font-bold text-on-surface">Alex Rivera</p>
-                <p className="text-[10px] uppercase tracking-wider text-outline">
-                  Lead Admin
-                </p>
-              </div>
-              <img
-                className="w-10 h-10 rounded-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvZ-iPF1iacjNPQTsz-mm17flAiR_HkYEC38mUXRbQuMhx7H05h_E6iAUZyGm8LCEk6KspRiaeZS_8W80e96HfmIFyT_N7X24J2nNu0k-XRhqeJt-_4ehkWD7fiimT8Lj7oBuf6A05dlOIrXGc3TiUml_KyA_oH_HavMsTTdt0YvI5-HxUa_ds83oft_P187IMU2A6h89Tb8By661UHanjgi8-At0U5StHB9FmcUoZXH4XL1d6ENNATZ-WNhjVuWxre92tl1W9xv1c"
-                alt="Admin Avatar"
-              />
-            </div>
+          <h3 className="font-headline text-3xl font-extrabold">
+            {participants.length}
+          </h3>
+          <p className="text-xs text-secondary mt-2">Across all events</p>
+        </div>
+
+        <div className="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/40 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-outline">
+              Active Members
+            </p>
+            <span className="material-symbols-outlined text-tertiary text-2xl">
+              check_circle
+            </span>
           </div>
-        </header>
+          <h3 className="font-headline text-3xl font-extrabold">
+            {participants.filter((p) => p.status === "Active").length}
+          </h3>
+          <p className="text-xs text-secondary mt-2">Currently active</p>
+        </div>
 
-        <div className="px-8 pt-10 pb-12">
-          {/* Editorial Header */}
-          <div className="flex justify-between items-end mb-10">
-            <div>
-              <h2 className="text-4xl font-extrabold tracking-tight text-on-surface mb-2 font-headline">
-                Participant Management
-              </h2>
-              <p className="text-on-surface-variant max-w-xl">
-                Curate and oversee all registered teams for the upcoming
-                hackathon season. Managing high-impact collaborations across
-                borders.
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-outline ml-1 font-label">
-                  Active Event
-                </label>
-                <div className="bg-surface-container-lowest rounded-xl px-4 py-2 flex items-center gap-3 shadow-sm cursor-pointer hover:bg-surface-container-low transition-colors border border-slate-100 dark:border-slate-800">
-                  <span className="material-symbols-outlined text-primary">
-                    event
-                  </span>
-                  <span className="font-bold text-sm">
-                    Global Hackathon 2024
-                  </span>
-                  <span className="material-symbols-outlined text-outline text-sm">
-                    expand_more
-                  </span>
-                </div>
-              </div>
-            </div>
+        <div className="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/40 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-outline">
+              Pending Verification
+            </p>
+            <span className="material-symbols-outlined text-secondary text-2xl">
+              pending_actions
+            </span>
           </div>
-
-          {/* Stats Bento Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            {/* Total Teams */}
-            <div className="bg-surface-container-lowest p-6 rounded-xl relative overflow-hidden group transition-all hover:-translate-y-1 shadow-sm border border-slate-100 dark:border-slate-800">
-              <div className="relative z-10">
-                <p className="text-sm font-medium text-outline mb-1 font-label">
-                  Total Registered Teams
-                </p>
-                <h3 className="text-4xl font-black text-on-surface font-headline">
-                  128
-                </h3>
-                <div className="mt-4 flex items-center gap-2 text-xs font-bold text-primary">
-                  <span className="material-symbols-outlined text-sm">
-                    trending_up
-                  </span>
-                  <span>+12% from last week</span>
-                </div>
-              </div>
-              <span className="material-symbols-outlined absolute -right-4 -bottom-4 text-9xl text-surface-container-low transition-transform group-hover:scale-110">
-                groups
-              </span>
-            </div>
-
-            {/* Total Participants */}
-            <div className="bg-surface-container-lowest p-6 rounded-xl relative overflow-hidden group transition-all hover:-translate-y-1 shadow-sm border border-slate-100 dark:border-slate-800">
-              <div className="relative z-10">
-                <p className="text-sm font-medium text-outline mb-1 font-label">
-                  Total Participants
-                </p>
-                <h3 className="text-4xl font-black text-on-surface font-headline">
-                  512
-                </h3>
-                <div className="mt-4 flex items-center gap-2 text-xs font-bold text-tertiary">
-                  <span className="material-symbols-outlined text-sm">
-                    person_pin
-                  </span>
-                  <span>Capacity: 85%</span>
-                </div>
-              </div>
-              <span className="material-symbols-outlined absolute -right-4 -bottom-4 text-9xl text-surface-container-low transition-transform group-hover:scale-110">
-                emoji_people
-              </span>
-            </div>
-
-            {/* Needing Verification */}
-            <div className="bg-primary p-6 rounded-xl relative overflow-hidden group transition-all hover:-translate-y-1 shadow-lg shadow-primary/20">
-              <div className="relative z-10">
-                <p className="text-sm font-medium text-primary-container mb-1 font-label">
-                  Needing Verification
-                </p>
-                <h3 className="text-4xl font-black text-white font-headline">
-                  14
-                </h3>
-                <div className="mt-4 flex items-center gap-2 text-xs font-bold text-on-primary-container">
-                  <span className="material-symbols-outlined text-sm">
-                    priority_high
-                  </span>
-                  <span>Action Required</span>
-                </div>
-              </div>
-              <span className="material-symbols-outlined absolute -right-4 -bottom-4 text-9xl text-on-primary-container/20 transition-transform group-hover:scale-110">
-                verified_user
-              </span>
-            </div>
-          </div>
-
-          {/* Team Table Section */}
-          <div className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800">
-            <div className="px-8 py-6 flex justify-between items-center border-b border-outline-variant/10">
-              <h3 className="text-xl font-bold text-on-surface font-headline">
-                Registered Teams
-              </h3>
-              <div className="flex gap-2">
-                <button className="p-2 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-white transition-colors">
-                  <span className="material-symbols-outlined">filter_list</span>
-                </button>
-                <button className="p-2 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-white transition-colors">
-                  <span className="material-symbols-outlined">sort</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-surface-container-low/50">
-                    <th className="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-outline font-label">
-                      Team Name
-                    </th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-outline font-label">
-                      Team Leader
-                    </th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-outline text-center font-label">
-                      Members
-                    </th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-outline font-label">
-                      Problem Statement
-                    </th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-outline font-label">
-                      Reg. Date
-                    </th>
-                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-outline font-label">
-                      Status
-                    </th>
-                    <th className="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-outline text-right font-label">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {participants.map((team, idx) => (
-                    <tr
-                      key={idx}
-                      className="hover:bg-surface-container-low/30 transition-colors group"
-                    >
-                      <td className="px-8 py-5">
-                        <div className="font-bold text-on-surface">
-                          {team.teamName}
-                        </div>
-                        <div className="text-[10px] text-primary font-medium">
-                          Team ID: {team.teamId}
-                        </div>
-                      </td>
-                      <td className="px-6 py-5">
-                        <div className="flex items-center gap-3">
-                          <img
-                            className="w-8 h-8 rounded-full object-cover"
-                            src={team.leaderAvatar}
-                            alt={team.leaderName}
-                          />
-                          <span className="text-sm font-semibold">
-                            {team.leaderName}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-5 text-center">
-                        <span className="bg-surface-container-high px-3 py-1 rounded-full text-xs font-bold">
-                          {team.membersCount}
-                        </span>
-                      </td>
-                      <td className="px-6 py-5">
-                        <div className="text-sm text-on-surface-variant max-w-[200px] truncate">
-                          {team.problem}
-                        </div>
-                      </td>
-                      <td className="px-6 py-5 text-sm text-outline">
-                        {team.date}
-                      </td>
-                      <td className="px-6 py-5">
-                        <span
-                          className={`px-3 py-1 rounded-full ${team.statusColor} text-[10px] font-black uppercase tracking-tighter flex items-center gap-1 w-fit`}
-                        >
-                          <span
-                            className="material-symbols-outlined text-xs"
-                            style={{ fontVariationSettings: "'FILL' 1" }}
-                          >
-                            {team.statusIcon}
-                          </span>
-                          {team.status}
-                        </span>
-                      </td>
-                      <td className="px-8 py-5 text-right">
-                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button className="px-3 py-1.5 rounded-lg text-xs font-bold text-primary hover:bg-primary/10">
-                            Message
-                          </button>
-                          <button className="px-3 py-1.5 rounded-lg text-xs font-bold bg-primary text-white">
-                            Details
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="px-8 py-4 bg-surface-container-low/20 flex justify-between items-center border-t border-slate-100 dark:border-slate-800">
-              <p className="text-xs font-medium text-outline">
-                Showing 1-10 of 128 registered teams
-              </p>
-              <div className="flex gap-2">
-                <button className="p-2 rounded-lg hover:bg-surface-container-high transition-colors text-outline">
-                  <span className="material-symbols-outlined text-sm">
-                    chevron_left
-                  </span>
-                </button>
-                <button className="w-8 h-8 rounded-lg bg-primary text-white text-xs font-bold shadow-sm">
-                  1
-                </button>
-                <button className="w-8 h-8 rounded-lg hover:bg-surface-container-high transition-colors text-xs font-bold">
-                  2
-                </button>
-                <button className="w-8 h-8 rounded-lg hover:bg-surface-container-high transition-colors text-xs font-bold">
-                  3
-                </button>
-                <button className="p-2 rounded-lg hover:bg-surface-container-high transition-colors text-outline">
-                  <span className="material-symbols-outlined text-sm">
-                    chevron_right
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
+          <h3 className="font-headline text-3xl font-extrabold">
+            {participants.filter((p) => p.status === "Pending").length}
+          </h3>
+          <p className="text-xs text-secondary mt-2">Awaiting approval</p>
         </div>
       </div>
 
-      {/* Contextual FAB */}
-      <button className="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-gradient-to-br from-primary-container to-primary text-white shadow-2xl flex items-center justify-center hover:scale-110 transition-transform active:scale-95 group z-50">
-        <span className="material-symbols-outlined">person_add</span>
-        <span className="absolute right-full mr-4 px-3 py-1 bg-on-surface text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-          Add Team
-        </span>
-      </button>
+      {/* Participants Table */}
+      <div className="overflow-hidden rounded-2xl border border-outline-variant/40 bg-surface-container-lowest shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-surface-container-low/60 text-[10px] uppercase tracking-widest text-outline border-b border-outline-variant/40">
+              <tr>
+                <th className="px-6 py-4">Name</th>
+                <th className="px-6 py-4">Email</th>
+                <th className="px-6 py-4">Role</th>
+                <th className="px-6 py-4">Team</th>
+                <th className="px-6 py-4">Join Date</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-outline-variant/20">
+              {participants.map((participant) => (
+                <tr
+                  key={participant.id}
+                  className="group transition hover:bg-surface-container-low/30"
+                >
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={participant.avatar}
+                        alt={participant.name}
+                        className="h-8 w-8 rounded-full object-cover"
+                      />
+                      <div>
+                        <p className="text-sm font-bold">{participant.name}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="text-sm text-secondary">
+                      {participant.email}
+                    </p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex px-3 py-1 rounded-full bg-primary-container/20 text-xs font-bold text-primary">
+                      {participant.role}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="text-sm font-medium">{participant.team}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="text-sm text-secondary">
+                      {participant.joinDate}
+                    </p>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold ${
+                        participant.status === "Active"
+                          ? "bg-tertiary-fixed text-on-tertiary-fixed-variant"
+                          : "bg-secondary-fixed text-on-secondary-container"
+                      }`}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                      {participant.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition">
+                      <button className="rounded-lg p-1.5 text-secondary hover:bg-surface-container-low hover:text-primary transition">
+                        <span className="material-symbols-outlined text-lg">
+                          edit
+                        </span>
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirm(participant.id)}
+                        className="rounded-lg p-1.5 text-secondary hover:bg-surface-container-low hover:text-error transition"
+                      >
+                        <span className="material-symbols-outlined text-lg">
+                          delete
+                        </span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-surface-container-lowest border border-outline-variant/40 p-6 shadow-2xl">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="grid h-10 w-10 place-items-center rounded-full bg-error-container">
+                <span className="material-symbols-outlined text-error">
+                  delete_outline
+                </span>
+              </div>
+              <h2 className="font-headline text-xl font-bold">
+                Delete Participant?
+              </h2>
+            </div>
+            <p className="mb-6 text-sm text-secondary">
+              Are you sure you want to delete this participant? This action
+              cannot be undone.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="px-5 py-2 text-sm font-bold text-outline transition hover:text-on-surface"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteParticipant(deleteConfirm)}
+                className="rounded-lg bg-error px-5 py-2 text-sm font-bold text-white transition hover:brightness-110 active:scale-95"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
