@@ -1,17 +1,62 @@
 import React from "react";
-import PageHeader from "../../components/layout/PageHeader";
-import KpiCard from "../../components/ui/KpiCard";
-import RecentRegistrations from "../../components/ui/RecentRegistrations";
+
+const kpis = [
+  { title: "Total Events", value: "148", subtitle: "24 Active", icon: "event" },
+  { title: "Teams", value: "72", subtitle: "Registered", icon: "groups" },
+  {
+    title: "Revenue",
+    value: "$84.2k",
+    subtitle: "This month",
+    icon: "payments",
+  },
+  { title: "Judges", value: "28", subtitle: "Active", icon: "gavel" },
+];
+
+const recentActivity = [
+  {
+    id: 1,
+    title: "Team Alpha registered",
+    time: "2 mins ago",
+    status: "New",
+    statusClass: "bg-tertiary-fixed text-on-tertiary-fixed-variant",
+  },
+  {
+    id: 2,
+    title: "Scores submitted for Tech Summit 2024",
+    time: "10 mins ago",
+    status: "Updated",
+    statusClass: "bg-secondary-container text-on-secondary-container",
+  },
+  {
+    id: 3,
+    title: "Payment received for Regional Finals",
+    time: "21 mins ago",
+    status: "Paid",
+    statusClass: "bg-primary-fixed text-on-primary-fixed-variant",
+  },
+  {
+    id: 4,
+    title: "New judge invitation sent",
+    time: "35 mins ago",
+    status: "Sent",
+    statusClass: "bg-surface-container-high text-slate-700",
+  },
+];
 
 export default function AdminDashboard() {
   return (
-    <>
-      {/* Header */}
-      <PageHeader
-        title="Administrative Overview"
-        subtitle="Welcome back, Chief Admin. Here's what's happening today."
-        actions={
-          <>
+    <section className="bg-surface text-on-surface min-h-screen font-body antialiased overflow-x-hidden">
+      <div className="min-h-screen">
+        <header className="flex items-center justify-between w-full px-8 py-4 h-20 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl sticky top-0 z-30 border-b border-slate-100 dark:border-slate-800">
+          <div>
+            <h1 className="text-3xl font-black tracking-tight font-headline">
+              Administrative Overview
+            </h1>
+            <p className="text-sm text-slate-500 mt-1">
+              Welcome back. Here is your latest event management summary.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
             <button className="flex items-center gap-2 px-5 py-2.5 bg-surface-container-high text-primary font-bold text-sm rounded-lg hover:bg-surface-container-highest transition-colors active:scale-95">
               <span className="material-symbols-outlined text-lg">
                 file_download
@@ -22,173 +67,146 @@ export default function AdminDashboard() {
               <span className="material-symbols-outlined text-lg">add</span>
               Create Event
             </button>
-          </>
-        }
-      />
-
-      {/* KPI Grid */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <KpiCard
-          title="Total Events"
-          value="148"
-          subtitle="24 Active"
-          icon="calendar_today"
-          trendValue="+12%"
-          trendType="up"
-          bgClass="bg-blue-50"
-          textClass="text-primary"
-          colorClass="text-tertiary-container bg-tertiary-fixed"
-        />
-        <KpiCard
-          title="Teams"
-          value="72"
-          subtitle="Registered"
-          icon="groups"
-          trendValue="+5%"
-          trendType="up"
-          bgClass="bg-purple-50"
-          textClass="text-secondary"
-          colorClass="text-on-tertiary-fixed-variant bg-tertiary-fixed"
-        />
-        <KpiCard 
-          title="Total Revenue" value="$84.2k" subtitle="USD Net"
-          icon="payments" trendValue="+24%" trendType="up"
-          bgClass="bg-green-50" textClass="text-emerald-700" colorClass="text-emerald-800 bg-emerald-100"
-        />
-        <KpiCard
-          title="Judges"
-          value="28"
-          subtitle="Active Judges"
-          icon="gavel"
-          trendValue="+3%"
-          trendType="up"
-          bgClass="bg-orange-50"
-          textClass="text-orange-700"
-          colorClass="text-orange-800 bg-orange-100"
-        />
-      </section>
-
-      {/* Main Insights Section (Bento Style) */}
-      <section className="grid grid-cols-12 gap-8 mb-10">
-        {/* Registration Trend Chart Area */}
-        <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-8 flex flex-col shadow-sm border border-slate-100 dark:border-slate-800">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h3 className="font-headline text-xl font-bold text-on-surface">
-                Daily Registration Trend
-              </h3>
-              <p className="text-sm text-slate-400">
-                Activity volume across all active events
-              </p>
-            </div>
-            <div className="flex items-center gap-2 bg-surface-container-low p-1 rounded-lg">
-              <button className="px-3 py-1 text-xs font-bold bg-white text-primary rounded shadow-sm">
-                7 Days
-              </button>
-              <button className="px-3 py-1 text-xs font-bold text-slate-500">
-                30 Days
-              </button>
-            </div>
           </div>
-          <div className="flex-1 min-h-[300px] flex items-end gap-2 px-2">
-            {[40, 65, 55, 85, 95, 45, 30].map((height, i) => {
-              const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-              const isPeak = height === 95;
-              return (
-                <div
-                  key={i}
-                  className="flex-1 rounded-t-lg relative group"
-                  style={{ height: `${height}%` }}
-                >
-                  <div
-                    className={`absolute inset-x-0 bottom-0 rounded-t-lg h-full transition-colors duration-300 ${isPeak ? "bg-gradient-primary" : "bg-surface-container-low group-hover:bg-primary/20"}`}
-                  ></div>
-                  <span
-                    className={`absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] uppercase ${isPeak ? "font-bold text-primary" : "font-semibold text-slate-400"}`}
-                  >
-                    {days[i]}
+        </header>
+
+        <div className="p-8 space-y-8">
+          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {kpis.map((item) => (
+              <article
+                key={item.title}
+                className="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <span className="text-xs font-bold uppercase tracking-widest text-slate-500 font-label">
+                    {item.title}
+                  </span>
+                  <span className="material-symbols-outlined text-primary">
+                    {item.icon}
                   </span>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+                <p className="text-3xl font-black font-headline text-on-surface">
+                  {item.value}
+                </p>
+                <p className="text-sm text-slate-500 mt-1">{item.subtitle}</p>
+              </article>
+            ))}
+          </section>
 
-        {/* Quick Actions / Mini Map */}
-        <div className="col-span-12 lg:col-span-4 flex flex-col gap-6">
-          <div className="bg-primary p-6 rounded-xl text-white relative overflow-hidden group shadow-lg shadow-primary/20">
-            <div className="relative z-10">
-              <h4 className="font-headline text-lg font-bold mb-2">
-                Venue Distribution
-              </h4>
-              <p className="text-blue-100 text-xs mb-4">
-                You have events running across 12 major hubs.
-              </p>
-              <button className="px-4 py-2 bg-white/20 backdrop-blur-md rounded-lg text-xs font-bold hover:bg-white/30 transition-colors">
-                View Map
+          <section className="grid grid-cols-12 gap-6">
+            <article className="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-xl font-bold font-headline">
+                  Weekly Registration Trend
+                </h2>
+                <span className="text-xs font-bold uppercase tracking-widest text-slate-500 font-label">
+                  Last 7 Days
+                </span>
+              </div>
+
+              <div className="grid grid-cols-7 gap-3">
+                {[42, 58, 65, 74, 88, 63, 47].map((height, index) => {
+                  const days = [
+                    "Mon",
+                    "Tue",
+                    "Wed",
+                    "Thu",
+                    "Fri",
+                    "Sat",
+                    "Sun",
+                  ];
+                  return (
+                    <div
+                      key={days[index]}
+                      className="flex flex-col items-center gap-2"
+                    >
+                      <div className="flex h-44 w-full items-end rounded-lg bg-surface-container-low p-2">
+                        <div
+                          className="w-full rounded-md bg-linear-to-t from-primary to-primary-container"
+                          style={{ height: `${height}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 font-label">
+                        {days[index]}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </article>
+
+            <article className="col-span-12 lg:col-span-4 bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+              <h2 className="text-xl font-bold font-headline mb-4">
+                System Health
+              </h2>
+              <div className="space-y-4">
+                <HealthBar
+                  label="API Latency"
+                  value="42ms"
+                  width="92%"
+                  color="bg-emerald-500"
+                />
+                <HealthBar
+                  label="Database Load"
+                  value="28%"
+                  width="28%"
+                  color="bg-primary"
+                />
+                <HealthBar
+                  label="Storage"
+                  value="74%"
+                  width="74%"
+                  color="bg-orange-500"
+                />
+              </div>
+            </article>
+          </section>
+
+          <section className="bg-surface-container-lowest rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+            <div className="px-6 py-4 border-b border-surface-container-low flex items-center justify-between">
+              <h2 className="text-xl font-bold font-headline">
+                Recent Activity
+              </h2>
+              <button className="text-sm font-bold text-primary hover:underline">
+                View All
               </button>
             </div>
-            <div className="absolute -right-10 -bottom-10 opacity-20 group-hover:scale-110 transition-transform duration-500">
-              <span className="material-symbols-outlined text-[160px]">
-                public
-              </span>
-            </div>
-          </div>
 
-          <div className="bg-surface-container-lowest p-6 rounded-xl flex-1 shadow-sm border border-slate-100 dark:border-slate-800">
-            <h4 className="font-headline font-bold text-on-surface mb-4">
-              System Health
-            </h4>
-            <div className="space-y-4">
-              <HealthItem
-                label="API Latency"
-                value="42ms"
-                color="bg-emerald-500"
-                textClass="text-emerald-600"
-                width="98%"
-              />
-              <HealthItem
-                label="Database Load"
-                value="28%"
-                color="bg-primary"
-                textClass="text-primary"
-                width="28%"
-              />
-              <HealthItem
-                label="Storage"
-                value="74%"
-                color="bg-orange-500"
-                textClass="text-orange-600"
-                width="74%"
-              />
+            <div className="divide-y divide-surface-container-low">
+              {recentActivity.map((item) => (
+                <div
+                  key={item.id}
+                  className="px-6 py-4 flex items-center justify-between gap-4"
+                >
+                  <div>
+                    <p className="font-semibold text-on-surface">
+                      {item.title}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1">{item.time}</p>
+                  </div>
+                  <span
+                    className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${item.statusClass}`}
+                  >
+                    {item.status}
+                  </span>
+                </div>
+              ))}
             </div>
-          </div>
+          </section>
         </div>
-      </section>
-
-      {/* Recent Registrations */}
-      <RecentRegistrations />
-
-      {/* Global FAB */}
-      <div className="fixed bottom-10 right-10">
-        <button className="w-14 h-14 bg-gradient-primary text-white rounded-full flex items-center justify-center shadow-[0px_20px_40px_rgba(0,24,72,0.15)] active:scale-90 transition-all hover:rotate-90 duration-300">
-          <span className="material-symbols-outlined text-2xl">
-            settings_input_component
-          </span>
-        </button>
       </div>
-    </>
+    </section>
   );
 }
 
-function HealthItem({ label, value, color, textClass, width }) {
+function HealthBar({ label, value, width, color }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-xs text-slate-500 font-medium">{label}</span>
-        <span className={`text-xs font-bold ${textClass}`}>{value}</span>
+        <span className="text-xs font-bold text-slate-700">{value}</span>
       </div>
-      <div className="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden">
+      <div className="w-full h-2 bg-surface-container-low rounded-full overflow-hidden">
         <div className={`h-full ${color}`} style={{ width }}></div>
       </div>
     </div>
